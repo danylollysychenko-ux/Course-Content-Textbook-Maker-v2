@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from printerdemo import save_page_as_pdf
 from pypdf import PdfWriter
@@ -11,7 +10,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 
 def pdf_combiner():
@@ -37,7 +35,9 @@ def sanitize(str):
     str = re.sub(pattern, ' ', driver.title)
     return str
 
+
 driver = webdriver.Chrome()
+
 
 def wait_and_click_button(button_class):
     """waits until the url loads or 10 seconds pass by before clicking on a button using css.selecter and its class in the button_class parameter"""
@@ -46,6 +46,7 @@ def wait_and_click_button(button_class):
         EC.element_to_be_clickable((By.CSS_SELECTOR, button_class))
     )
     element.click()
+
 
 def wait_and_login(login_class, login_creds):
     element = WebDriverWait(driver, 10).until(
@@ -58,7 +59,6 @@ try:
     """program grabs all links on selected page. Opens them, saves the page to pdf.
     stores all pdfs in a folder (maintaining order)
     after all pdfs are processed, combines them together in the appropriate order."""
-
 
     # 2. Navigate to a website
     driver.get("https://ects-cmp.com/course_content/""")
@@ -83,7 +83,7 @@ try:
 
     elements = wait.until(EC.presence_of_element_located(
         (By.CSS_SELECTOR, ".menu-item")))
-    
+
     menu_items = driver.find_elements(By.CSS_SELECTOR, ".menu-item")
 
     sub_menu_items = driver.find_elements(
@@ -103,7 +103,6 @@ try:
     driver.get(elements[int(choice)]["url"])
     folder = elements[int(choice)]["text"]
     folder_path = f"output/{folder}"
-    
 
     content_links = driver.find_elements(
         By.CSS_SELECTOR, ".entry-content a[data-type=post]")
@@ -111,7 +110,7 @@ try:
     urls_to_visit = [url.get_attribute("href") for url in content_links if url.get_attribute(
         "href") and "http" in url.get_attribute("href")]
 
-    #tells you how many urls the code found
+    # tells you how many urls the code found
     print(f"Found {len(urls_to_visit)} links to process...")
 
     if not os.path.exists(f"{folder_path}/individual"):
@@ -126,9 +125,10 @@ try:
         driver.get(target_url)
 
         time.sleep(2)
-        #wait for content to load
+        # wait for content to load
         print(f"  Loaded: {driver.title}")
-        save_page_as_pdf(driver, target_url, f"{folder_path}/individual/{str(index).rjust(3, "0")}_{sanitize(driver.title)}.pdf")
+        save_page_as_pdf(
+            driver, target_url, f"{folder_path}/individual/{str(index).rjust(3, "0")}_{sanitize(driver.title)}.pdf")
 
         # Since we are using a list of URLs, we don't need to 'go back'
         # unless the site structure requires a specific flow.
